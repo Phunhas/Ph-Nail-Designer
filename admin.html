@@ -73,6 +73,7 @@
 </head>
 <body>
 <div class="wrap">
+  <div style="display:flex;justify-content:flex-end;min-height:40px"><button type="button" class="ghost mini" id="sair" hidden>Sair</button></div>
   <h1>Painel PH Nail Designer</h1>
   <p class="lead">Mude valores e horários do site. As mudanças aparecem em cerca de 1 minuto.</p>
 
@@ -192,7 +193,7 @@ async function carregar() {
     cfg = JSON.parse(fromB64(j.content));
     cfg.servicos = cfg.servicos || []; cfg.horarios = cfg.horarios || []; cfg.fotos = cfg.fotos || [];
     store.set("repo", repo); store.set("token", token);
-    $("editor").hidden = false; $("conexao").hidden = true;
+    $("editor").hidden = false; $("conexao").hidden = true; $("sair").hidden = false;
     preencher(); msg("Pronto para editar.", "ok");
   } catch (e) { msg(e.message || "Não consegui carregar.", "err"); }
 }
@@ -268,6 +269,11 @@ $("add-servico").onclick = () => { cfg.servicos.push({ nome: "", preco: "", nota
 $("add-hora").onclick = () => { cfg.horarios.push({ hora: "", ocupado: false }); desenharHorarios(); $("horarios").lastElementChild.querySelector("input").focus(); };
 $("liberar-todos").onclick = () => { cfg.horarios.forEach(h => h.ocupado = false); desenharHorarios(); };
 $("conectar").onclick = carregar;
+$("sair").onclick = () => {
+  if (!confirm("Sair do painel? Alterações não salvas serão perdidas e será preciso entrar de novo com o token.")) return;
+  try { localStorage.removeItem("token"); localStorage.removeItem("repo"); } catch (e) {}
+  location.reload();
+};
 
 // ---------- Fotos ----------
 const previews = {}; // miniaturas locais das fotos recém-enviadas (o site leva ~1 min para publicá-las)
