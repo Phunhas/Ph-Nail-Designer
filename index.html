@@ -7,8 +7,18 @@
 <meta name="description" content="PH Nail Designer: blindagem, banho de gel, esmaltação em gel e mais. Veja os valores, escolha o horário e agende pelo WhatsApp.">
 <meta name="theme-color" content="#12051f">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="PH Nail Designer">
+<meta property="og:url" content="https://phunhas.github.io/Ph-Nail-Designer/">
 <meta property="og:title" content="PH Nail Designer | Agendamentos">
 <meta property="og:description" content="Veja os valores, escolha o horário e agende pelo WhatsApp.">
+<meta property="og:image" content="https://phunhas.github.io/Ph-Nail-Designer/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PH Nail Designer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://phunhas.github.io/Ph-Nail-Designer/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23170826'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' font-weight='bold' fill='%23c084fc' text-anchor='middle'%3EPH%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
@@ -230,6 +240,42 @@
   .resumo p:last-child { margin-bottom: 0; }
   .resumo p b { color: var(--lilac-soft); font-weight: 600; }
 
+  /* ---------- Dias ---------- */
+  .dias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+  .dia {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 58px; padding: 8px 6px;
+    border: 1px solid var(--line); border-radius: 18px; background: transparent; color: var(--text); cursor: pointer; font-family: inherit;
+    transition: all .25s var(--ease); line-height: 1.15;
+  }
+  .dia b { font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .dia small { font-size: 13px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .dia:hover { border-color: var(--line-hi); background: rgba(168,85,247,.12); }
+  .dia.sel { background: var(--card-hi); border-color: var(--lilac); box-shadow: 0 0 0 1px rgba(192,132,252,.35); }
+  .dia.sel small { color: var(--lilac-soft); }
+  .slot.passou small { text-transform: none; letter-spacing: .04em; }
+
+  /* ---------- Dúvidas ---------- */
+  .faq { display: grid; gap: 10px; }
+  .faq details { border: 1px solid var(--line); border-radius: 18px; background: var(--card); transition: border-color .3s, background .3s; }
+  .faq details[open] { border-color: var(--lilac); background: var(--card-hi); }
+  .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; font-size: 19px; font-weight: 600; color: var(--lilac-soft); overflow-wrap: anywhere; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-hi); font-size: 20px; line-height: 1; transition: transform .35s var(--ease), background .3s; }
+  .faq details[open] summary::after { transform: rotate(45deg); background: rgba(192,132,252,.22); }
+  .faq .resp { padding: 0 18px 18px; color: var(--text); opacity: .88; white-space: pre-line; overflow-wrap: anywhere; }
+  @media (prefers-reduced-motion: no-preference) { .faq details[open] .resp { animation: fadeUp .4s var(--ease) both; } }
+
+  /* ---------- Local ---------- */
+  .local { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 18px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); }
+  .local .ico { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #a855f7, #6d28d9); }
+  .local .ico svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .local .txt { flex: 1 1 200px; min-width: 0; }
+  .local .txt small { display: block; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
+  .local .txt b { display: block; font-weight: 600; font-size: 20px; overflow-wrap: anywhere; }
+  .local .txt span { display: block; color: var(--muted); font-size: 16px; overflow-wrap: anywhere; }
+  .local .btn { padding: 11px 22px; font-size: 17px; }
+  @media (max-width: 480px) { .local .btn { width: 100%; } }
+
   /* ---------- Galeria ---------- */
   .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .galeria button { display: block; width: 100%; padding: 0; aspect-ratio: 1; overflow: hidden; cursor: pointer; border: 1px solid var(--line); border-radius: 20px; background: var(--card); transition: border-color .3s, box-shadow .3s; }
@@ -244,7 +290,13 @@
   @media (prefers-reduced-motion: no-preference) { .lightbox:not([hidden]) { animation: fade .3s ease both; } .lightbox:not([hidden]) img { animation: pop .45s var(--ease) both; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pop { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
-  .lightbox img { max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: 16px; box-shadow: var(--glow); }
+  .lb-btn { position: absolute; z-index: 2; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line-hi); background: rgba(15,4,25,.7); color: #fff; font-size: 24px; line-height: 1; cursor: pointer; font-family: inherit; transition: background .25s, transform .25s var(--ease); }
+  .lb-btn:hover { background: rgba(168,85,247,.4); transform: scale(1.06); }
+  #lb-prev { left: max(10px, env(safe-area-inset-left, 0px)); top: 50%; margin-top: -24px; }
+  #lb-next { right: max(10px, env(safe-area-inset-right, 0px)); top: 50%; margin-top: -24px; }
+  #lb-x { right: max(12px, env(safe-area-inset-right, 0px)); top: calc(12px + env(safe-area-inset-top, 0px)); }
+  .lb-count { color: var(--muted); font-size: 15px; letter-spacing: .14em; }
+  .lightbox img { max-width: 100%; max-height: 74vh; touch-action: pan-y; object-fit: contain; border-radius: 16px; box-shadow: var(--glow); }
   .lightbox p { color: var(--lilac-soft); text-align: center; overflow-wrap: anywhere; }
   .lightbox .fechar { color: var(--muted); font-size: 15px; letter-spacing: .1em; }
 
@@ -281,10 +333,10 @@
   @media (prefers-reduced-motion: no-preference) { .dock:not([hidden]) { animation: dockin .5s var(--ease) both; } }
   @keyframes dockin { from { transform: translateY(100%); } to { transform: none; } }
   .dock .in { width: 100%; max-width: 724px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-  .dock .t { min-width: 0; line-height: 1.15; }
-  .dock .t small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .dock .t { flex: 1; min-width: 0; line-height: 1.15; }
+  .dock .t small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .dock .t b { font-family: var(--display); font-size: 25px; font-variant-numeric: tabular-nums; }
-  .dock .btn { flex: none; padding: 13px 22px; font-size: 17px; }
+  .dock .btn { flex: none; padding: 13px 18px; font-size: 16px; }
 
   .float {
     position: fixed; z-index: 20;
@@ -373,8 +425,9 @@
       <div class="rv">
         <div class="eyebrow">Passo 2</div>
         <h2>Horários Disponíveis</h2>
-        <p class="sub">Escolha o horário. O dia a gente combina na conversa.</p>
+        <p class="sub">Escolha o dia e o horário. Quem prefere outro dia combina direto na conversa.</p>
       </div>
+      <div class="dias rv" id="dias" role="group" aria-label="Dia do atendimento"></div>
       <div id="agenda" class="rv"></div>
       <div class="resumo rv" id="resumo"></div>
       <p class="hint">Não achou um horário bom? Chame no WhatsApp que a gente combina.</p>
@@ -389,11 +442,25 @@
       <div class="galeria" id="galeria"></div>
     </section>
 
+    <section id="duvidas" hidden>
+      <div class="rv">
+        <div class="eyebrow">Tire suas dúvidas</div>
+        <h2>Perguntas Frequentes</h2>
+        <p class="sub">O que mais perguntam antes de agendar.</p>
+      </div>
+      <div class="faq rv" id="faq"></div>
+    </section>
+
     <section id="contato">
       <div class="rv">
         <div class="eyebrow">Fale com a gente</div>
         <h2>Agendamentos</h2>
         <p class="sub">Escolha o canal que for mais fácil para você.</p>
+      </div>
+      <div class="local rv" id="local" hidden>
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.8" r="2.6"/></svg></span>
+        <div class="txt"><small>Onde atendo</small><b id="local-end"></b><span id="local-nota"></span></div>
+        <a class="btn" id="local-btn" href="#" target="_blank" rel="noopener">Como chegar</a>
       </div>
       <div class="contacts rv" id="contacts">
         <a class="cc" id="contact-whats" href="#" target="_blank" rel="noopener">
@@ -423,9 +490,12 @@
 </div>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" hidden>
+  <button type="button" class="lb-btn" id="lb-x" aria-label="Fechar">×</button>
+  <button type="button" class="lb-btn" id="lb-prev" aria-label="Foto anterior">‹</button>
   <img id="lb-img" src="" alt="">
   <p id="lb-legenda"></p>
-  <span class="fechar">Toque para fechar</span>
+  <span class="lb-count" id="lb-count"></span>
+  <button type="button" class="lb-btn" id="lb-next" aria-label="Próxima foto">›</button>
 </div>
 
 <a class="float" id="float-whats" href="#" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
@@ -450,7 +520,13 @@ const PADRAO = {
     { nome: "Banho de gel", preco: 60 },
     { nome: "Combo Banho de gel + Esmaltação em gel", preco: 70, combo: true }
   ],
-  horarios: ["09:00", "11:00", "14:00", "16:00", "18:00"].map(h => ({ hora: h, ocupado: false }))
+  horarios: ["09:00", "11:00", "14:00", "16:00", "18:00"].map(h => ({ hora: h, ocupado: false })),
+  endereco: "", enderecoNota: "", analytics: "", ocupadoData: "",
+  faq: [
+    { q: "Como faço para agendar?", a: "Escolha os serviços, o dia e o horário aqui no site e toque em Finalizar pelo WhatsApp. A mensagem já vai pronta, é só enviar e aguardar a confirmação." },
+    { q: "O valor do site é o valor final?", a: "O total mostrado é uma estimativa com base na tabela. O valor final é confirmado na conversa pelo WhatsApp." },
+    { q: "Posso escolher mais de um serviço?", a: "Pode sim. Toque em todos os serviços que quiser e o total é somado automaticamente." }
+  ]
 };
 
 const $ = id => document.getElementById(id);
@@ -462,6 +538,11 @@ const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let cfg = PADRAO;
 const servicosSel = new Set();
 let horarioSel = null;
+let diaSel = "hoje";
+
+const hojeISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dataCurta = d => d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" }).replace(".,", "").replace(".", "");
+const diaData = id => { const d = new Date(); if (id === "amanha") d.setDate(d.getDate() + 1); return dataCurta(d); };
 
 const wa = msg => `https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
 const foneBonito = n => {
@@ -510,16 +591,19 @@ function desenhar() {
       <div class="price"><small>R$</small>${brlNum(s.preco)}</div>
     </li>`).join("");
 
-  // Horários
-  const hs = cfg.horarios;
-  const livres = hs.filter(h => !h.ocupado).length;
-  if (horarioSel && !hs.some(h => h.hora === horarioSel && !h.ocupado)) horarioSel = null;
-  $("agenda").innerHTML = hs.length ? `
-    <div class="day"><div class="slots">
-      ${hs.map(h => `<button type="button" class="slot" data-h="${esc(h.hora)}" ${h.ocupado ? "disabled" : ""}>${esc(h.hora)}${h.ocupado ? "<small>ocupado</small>" : ""}</button>`).join("")}
-    </div></div>
-    ${livres ? "" : '<p class="hint">Todos os horários estão ocupados no momento. Chame no WhatsApp para entrar na lista de espera.</p>'}`
-    : '<p class="vazio">Sem horários abertos no momento. Chame no WhatsApp para consultar a agenda.</p>';
+  desenharDias(); desenharAgenda();
+
+  // Perguntas frequentes
+  const faq = (Array.isArray(cfg.faq) ? cfg.faq : []).filter(f => f && f.q && f.a);
+  $("duvidas").hidden = !faq.length;
+  $("faq").innerHTML = faq.map(f => `<details><summary>${esc(f.q)}</summary><div class="resp">${esc(f.a)}</div></details>`).join("");
+
+  // Endereço
+  const end = (cfg.endereco || "").trim();
+  $("local").hidden = !end;
+  $("local-end").textContent = end;
+  $("local-nota").textContent = cfg.enderecoNota || ""; $("local-nota").hidden = !cfg.enderecoNota;
+  $("local-btn").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(end)}`;
 
   // Galeria (só aparece se houver fotos)
   const fotos = (Array.isArray(cfg.fotos) ? cfg.fotos : []).filter(f => f && f.src);
@@ -531,6 +615,29 @@ function desenhar() {
 
   $("ano").textContent = new Date().getFullYear();
   atualizar();
+}
+
+function desenharDias() {
+  const itens = [["hoje", "Hoje", diaData("hoje")], ["amanha", "Amanhã", diaData("amanha")], ["outro", "Outro dia", "a combinar"]];
+  $("dias").innerHTML = itens.map(([id, nome, sub]) => `<button type="button" class="dia${id === diaSel ? " sel" : ""}" data-d="${id}" aria-pressed="${id === diaSel}"><b>${nome}</b><small>${esc(sub)}</small></button>`).join("");
+}
+
+function desenharAgenda() {
+  const agora = new Date(), hhmm = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+  const ocupadoVale = diaSel === "hoje" && (!cfg.ocupadoData || cfg.ocupadoData === hojeISO());
+  const hs = cfg.horarios.map(h => {
+    const passou = diaSel === "hoje" && h.hora <= hhmm;
+    const ocupado = !passou && ocupadoVale && !!h.ocupado;
+    return { hora: h.hora, passou, ocupado, off: passou || ocupado };
+  });
+  const livres = hs.filter(h => !h.off).length;
+  if (horarioSel && !hs.some(h => h.hora === horarioSel && !h.off)) horarioSel = null;
+  $("agenda").innerHTML = hs.length ? `
+    <div class="day"><div class="slots">
+      ${hs.map(h => `<button type="button" class="slot${h.passou ? " passou" : ""}" data-h="${esc(h.hora)}" ${h.off ? "disabled" : ""}>${esc(h.hora)}${h.ocupado ? "<small>ocupado</small>" : h.passou ? "<small>já passou</small>" : ""}</button>`).join("")}
+    </div></div>
+    ${livres ? "" : `<p class="hint">${diaSel === "hoje" ? "Não há mais horários livres hoje. Escolha Amanhã ou Outro dia." : "Todos os horários estão ocupados no momento. Chame no WhatsApp para entrar na lista de espera."}</p>`}`
+    : '<p class="vazio">Sem horários abertos no momento. Chame no WhatsApp para consultar a agenda.</p>';
 }
 
 // Número que sobe/desce suavemente
@@ -578,10 +685,13 @@ function atualizar() {
   if (!sel.length) {
     r.innerHTML = `<p>Escolha um serviço na tabela de valores para começar.</p>`;
   } else if (!horarioSel) {
-    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Total estimado:</b> ${brl(soma)}<br>Agora escolha um horário acima.</p>`;
+    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Total estimado:</b> ${brl(soma)}<br>Agora escolha o dia e o horário acima.</p>`;
   } else {
-    msg = `Oi! Gostaria de agendar: ${nomes.join(" + ")} às ${horarioSel} (total estimado ${brl(soma)}). Quais dias você tem disponível? 💜`;
-    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Horário:</b> ${esc(horarioSel)}<br><b>Total estimado:</b> ${brl(soma)}</p>
+    const quando = diaSel === "outro" ? "" : ` para ${diaSel === "hoje" ? "hoje" : "amanhã"} (${diaData(diaSel)})`;
+    const fim = diaSel === "outro" ? "Quais dias você tem disponível?" : "Pode confirmar?";
+    msg = `Oi! Gostaria de agendar: ${nomes.join(" + ")}${quando} às ${horarioSel} (total estimado ${brl(soma)}). ${fim} 💜`;
+    const diaTxt = diaSel === "outro" ? "A combinar na conversa" : `${diaSel === "hoje" ? "Hoje" : "Amanhã"}, ${diaData(diaSel)}`;
+    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Dia:</b> ${esc(diaTxt)}<br><b>Horário:</b> ${esc(horarioSel)}<br><b>Total estimado:</b> ${brl(soma)}</p>
       <a class="btn primary" target="_blank" rel="noopener" href="${wa(msg)}">Finalizar pelo WhatsApp</a>`;
   }
 
@@ -607,23 +717,50 @@ $("lista").addEventListener("click", e => {
 $("lista").addEventListener("keydown", e => {
   if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.target.closest(".item")?.click(); }
 });
+$("dias").addEventListener("click", e => {
+  const b = e.target.closest(".dia"); if (!b) return;
+  diaSel = b.dataset.d; desenharDias(); desenharAgenda(); atualizar();
+});
 $("agenda").addEventListener("click", e => {
   const b = e.target.closest(".slot"); if (!b || b.disabled) return;
   horarioSel = horarioSel === b.dataset.h ? null : b.dataset.h;
   atualizar();
 });
 
-// Foto ampliada
-$("galeria").addEventListener("click", e => {
-  const b = e.target.closest("button[data-i]"); if (!b) return;
-  const f = cfg.fotos[+b.dataset.i]; if (!f) return;
+// Foto ampliada (setas, teclado e deslize)
+let lbI = 0, lbX = null;
+function verFoto(i) {
+  const L = cfg.fotos.filter(f => f && f.src); if (!L.length) return;
+  lbI = (i + L.length) % L.length;
+  const f = L[lbI];
   $("lb-img").src = f.src; $("lb-img").alt = f.legenda || "Trabalho de nail designer";
   $("lb-legenda").textContent = f.legenda || "";
-  $("lightbox").hidden = false;
+  $("lb-count").textContent = L.length > 1 ? `${lbI + 1} / ${L.length}` : "";
+  $("lb-prev").hidden = $("lb-next").hidden = L.length < 2;
+}
+$("galeria").addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]"); if (!b) return;
+  verFoto(+b.dataset.i); $("lightbox").hidden = false; $("lb-x").focus();
 });
 const fecharFoto = () => { $("lightbox").hidden = true; $("lb-img").src = ""; };
-$("lightbox").addEventListener("click", fecharFoto);
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("lightbox").hidden) fecharFoto(); });
+$("lightbox").addEventListener("click", e => {
+  if (e.target.id === "lb-prev") return verFoto(lbI - 1);
+  if (e.target.id === "lb-next") return verFoto(lbI + 1);
+  if (e.target.id === "lb-img") return;
+  fecharFoto();
+});
+$("lightbox").addEventListener("touchstart", e => { lbX = e.touches[0].clientX; }, { passive: true });
+$("lightbox").addEventListener("touchend", e => {
+  if (lbX == null) return;
+  const dx = e.changedTouches[0].clientX - lbX; lbX = null;
+  if (Math.abs(dx) > 50) verFoto(lbI + (dx < 0 ? 1 : -1));
+}, { passive: true });
+document.addEventListener("keydown", e => {
+  if ($("lightbox").hidden) return;
+  if (e.key === "Escape") fecharFoto();
+  if (e.key === "ArrowLeft") verFoto(lbI - 1);
+  if (e.key === "ArrowRight") verFoto(lbI + 1);
+});
 
 // Logo: usa logo.png se existir; senão mostra o PH em texto
 (() => {
@@ -714,8 +851,26 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("lightb
   iniciar();
 })();
 
+// Contador de visitas (só carrega se houver código no painel)
+let contadorOk = false;
+function iniciarContador() {
+  const c = String(cfg.analytics || "").trim().toLowerCase();
+  if (contadorOk || !/^[a-z0-9-]{2,40}$/.test(c)) return;
+  contadorOk = true;
+  const sc = document.createElement("script");
+  sc.async = true; sc.src = "https://gc.zgo.at/count.js";
+  sc.dataset.goatcounter = `https://${c}.goatcounter.com/count`;
+  document.head.appendChild(sc);
+}
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href]"); if (!a || !window.goatcounter || !window.goatcounter.count) return;
+  const h = a.href;
+  const nome = h.includes("wa.me") ? "clique-whatsapp" : h.includes("instagram.com") ? "clique-instagram" : h.includes("google.com/maps") ? "clique-mapa" : h.startsWith("mailto:") ? "clique-email" : "";
+  if (nome) window.goatcounter.count({ path: nome, title: nome, event: true });
+});
+
 desenhar();
-carregar();
+carregar().then(iniciarContador);
 </script>
 </body>
 </html>

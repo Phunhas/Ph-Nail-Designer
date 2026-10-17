@@ -8,6 +8,7 @@ Site de agendamento da PH Nail Designer. A cliente escolhe os serviços, escolhe
 |---|---|
 | `index.html` | O site que as clientes veem |
 | `config.json` | Valores, horários, contatos e aviso (é o que o painel edita) |
+| `og.png` | Imagem que aparece quando o link é enviado no WhatsApp/Instagram |
 | `admin.html` | Painel para mudar valores e horários pelo celular |
 | `logo.png` | Opcional. Se existir, aparece no topo no lugar do "PH" em texto |
 
@@ -38,6 +39,9 @@ No painel dá para:
 - adicionar e remover horários;
 - marcar um horário como **ocupado** (ele continua aparecendo para as clientes, mas sem poder escolher) e liberar depois;
 - enviar **fotos dos trabalhos**: escolha as fotos no celular e toque em "Enviar fotos para o site". Elas são reduzidas sozinhas e aparecem na seção "Meus Trabalhos". Dá para escrever uma legenda (salva em "Salvar no site") e remover fotos. Se não houver nenhuma foto, a seção não aparece no site;
+- marcar **o dia todo ocupado** com um toque (o "ocupado" vale só para hoje e some sozinho no dia seguinte);
+- editar as **perguntas frequentes** e o **endereço** (com botão "Como chegar"); se estiverem vazios, a seção não aparece;
+- ligar o **contador de visitas** (GoatCounter, grátis): crie a conta em goatcounter.com, escolha um código e digite o mesmo código no painel;
 - escrever um **aviso** que aparece no topo do site;
 - mudar WhatsApp, Instagram e e-mail.
 

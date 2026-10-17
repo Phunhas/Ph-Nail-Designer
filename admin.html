@@ -97,10 +97,11 @@
 
     <div class="card">
       <h2>Horários</h2>
-      <p class="help">Toque em "Marcar ocupado" quando um horário for reservado. Ele continua aparecendo para as clientes, mas sem poder escolher.</p>
+      <p class="help">Toque em "Marcar ocupado" quando um horário for reservado. Ele continua aparecendo para as clientes, mas sem poder escolher. O "ocupado" vale só para hoje: amanhã tudo volta livre sozinho.</p>
       <div id="horarios"></div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px">
         <button type="button" class="ghost mini" id="add-hora">+ Adicionar horário</button>
+        <button type="button" class="ghost mini" id="ocupar-todos">Marcar o dia todo ocupado</button>
         <button type="button" class="ghost mini" id="liberar-todos">Liberar todos</button>
       </div>
     </div>
@@ -122,6 +123,22 @@
     </div>
 
     <div class="card">
+      <h2>Perguntas frequentes</h2>
+      <p class="help">Aparecem no site em uma lista que abre ao tocar. Bom para forma de pagamento, tempo de atraso, cancelamento, o que levar. Se não houver nenhuma, a seção some.</p>
+      <div id="faq"></div>
+      <button type="button" class="ghost mini" id="add-faq">+ Adicionar pergunta</button>
+    </div>
+
+    <div class="card">
+      <h2>Endereço de atendimento</h2>
+      <p class="help">Opcional. Aparece no site com o botão "Como chegar" (abre o mapa no celular). Deixe vazio se atende em domicílio ou prefere não mostrar.</p>
+      <label for="endereco">Endereço completo</label>
+      <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade">
+      <label for="enderecoNota">Observação (opcional)</label>
+      <input type="text" id="enderecoNota" maxlength="120" placeholder="Ex.: atendimento só com hora marcada">
+    </div>
+
+    <div class="card">
       <h2>Contato</h2>
       <label for="whats">WhatsApp (com 55 e DDD, só números)</label>
       <input type="text" id="whats" inputmode="numeric" placeholder="5581999999999">
@@ -129,6 +146,13 @@
       <input type="text" id="insta" autocapitalize="off" placeholder="phranciely.gomes">
       <label for="email">E-mail</label>
       <input type="text" id="email" inputmode="email" autocapitalize="off" placeholder="nome@exemplo.com">
+    </div>
+
+    <div class="card">
+      <h2>Contador de visitas (opcional)</h2>
+      <p class="help">Para ver quantas pessoas entram no site e quantas tocam no WhatsApp. Crie uma conta grátis em <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a>, escolha um código (ex.: <b>phnail</b>) e digite o mesmo código aqui. Os números aparecem em CÓDIGO.goatcounter.com. Não usa cookies. Deixe vazio para não medir.</p>
+      <label for="analytics">Código do GoatCounter</label>
+      <input type="text" id="analytics" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="phnail">
     </div>
 
     <p class="small" style="text-align:center"><a href="index.html">← Ver o site</a></p>
@@ -160,6 +184,7 @@ let sha = null;     // versão do config.json no GitHub
   $("token").value = store.get("token");
 })();
 
+const hojeISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const msg = (t, cls = "") => { $("status").className = cls; $("status").textContent = t; };
 
 function api(path, opts = {}) {
@@ -192,9 +217,12 @@ async function carregar() {
     sha = j.sha;
     cfg = JSON.parse(fromB64(j.content));
     cfg.servicos = cfg.servicos || []; cfg.horarios = cfg.horarios || []; cfg.fotos = cfg.fotos || [];
+    cfg.faq = Array.isArray(cfg.faq) ? cfg.faq : [];
+    let virouDia = false;
+    if (cfg.ocupadoData && cfg.ocupadoData !== hojeISO() && cfg.horarios.some(h => h.ocupado)) { cfg.horarios.forEach(h => h.ocupado = false); virouDia = true; }
     store.set("repo", repo); store.set("token", token);
     $("editor").hidden = false; $("conexao").hidden = true; $("sair").hidden = false;
-    preencher(); msg("Pronto para editar.", "ok");
+    preencher(); msg(virouDia ? "Os horários ocupados de ontem foram liberados. Toque em Salvar no site para confirmar." : "Pronto para editar.", "ok");
   } catch (e) { msg(e.message || "Não consegui carregar.", "err"); }
 }
 
@@ -203,6 +231,10 @@ function preencher() {
   $("whats").value = cfg.whatsapp || "";
   $("insta").value = cfg.instagram || "";
   $("email").value = cfg.email || "";
+  $("endereco").value = cfg.endereco || "";
+  $("enderecoNota").value = cfg.enderecoNota || "";
+  $("analytics").value = cfg.analytics || "";
+  desenharFaq();
   desenharHorarios(); desenharServicos(); desenharFotos();
 }
 
@@ -218,6 +250,15 @@ function desenharHorarios() {
         <button type="button" class="danger mini" data-a="del" aria-label="Remover horário">Remover</button>
       </div>
     </div>`).join("") : '<p class="help">Nenhum horário. Adicione o primeiro abaixo.</p>';
+}
+
+function desenharFaq() {
+  $("faq").innerHTML = (cfg.faq || []).length ? cfg.faq.map((f, i) => `
+    <div class="row" data-i="${i}">
+      <div><label>Pergunta</label><input type="text" data-f="q" maxlength="120" value="${esc(f.q)}" placeholder="Ex.: Quais formas de pagamento?"></div>
+      <div><label>Resposta</label><textarea data-f="a" maxlength="500" placeholder="Ex.: Pix, dinheiro e cartão.">${esc(f.a)}</textarea></div>
+      <div class="acts"><button type="button" class="danger mini" data-a="del">Remover</button></div>
+    </div>`).join("") : '<p class="help">Nenhuma pergunta. Adicione a primeira abaixo.</p>';
 }
 
 function desenharServicos() {
@@ -236,6 +277,18 @@ function desenharServicos() {
       </div>
     </div>`).join("");
 }
+
+$("faq").addEventListener("input", e => {
+  const row = e.target.closest("[data-i]"), f = e.target.dataset.f; if (!row || !f) return;
+  cfg.faq[+row.dataset.i][f] = e.target.value;
+});
+$("faq").addEventListener("click", e => {
+  const b = e.target.closest("button[data-a]"); if (!b) return;
+  if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "Confirmar remoção"; return; }
+  cfg.faq.splice(+b.closest("[data-i]").dataset.i, 1); desenharFaq();
+});
+$("add-faq").onclick = () => { (cfg.faq = cfg.faq || []).push({ q: "", a: "" }); desenharFaq(); $("faq").lastElementChild.querySelector("input").focus(); };
+$("ocupar-todos").onclick = () => { cfg.horarios.forEach(h => h.ocupado = true); desenharHorarios(); msg("Todos os horários de hoje marcados como ocupados. Toque em Salvar no site.", "ok"); };
 
 // Edição dos campos
 $("servicos").addEventListener("input", e => {
@@ -385,7 +438,13 @@ function validar() {
   if (whatsapp.length < 12) throw new Error("WhatsApp incompleto. Use 55 + DDD + número.");
   const email = $("email").value.trim();
   if (email && !/^\S+@\S+\.\S+$/.test(email)) throw new Error("E-mail inválido.");
+  const faq = (cfg.faq || []).map(f => ({ q: String(f.q || "").trim(), a: String(f.a || "").trim() })).filter(f => f.q || f.a);
+  if (faq.some(f => !f.q || !f.a)) throw new Error("Pergunta frequente incompleta: preencha pergunta e resposta, ou remova.");
+  const analytics = $("analytics").value.trim().toLowerCase();
+  if (analytics && !/^[a-z0-9-]{2,40}$/.test(analytics)) throw new Error("Código do contador inválido. Use só letras minúsculas, números e hífen.");
   return {
+    endereco: $("endereco").value.trim(), enderecoNota: $("enderecoNota").value.trim(),
+    faq, analytics, ocupadoData: horarios.some(h => h.ocupado) ? hojeISO() : "",
     whatsapp, instagram: $("insta").value.trim().replace(/^@/, ""), email,
     aviso: $("aviso").value.trim(), servicos, horarios,
     fotos: (cfg.fotos || []).map(f => ({ src: f.src, legenda: String(f.legenda || "").trim().slice(0, 80) }))
