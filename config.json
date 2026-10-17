@@ -1,4 +1,23 @@
 {
+  "endereco": "",
+  "enderecoNota": "",
+  "faq": [
+    {
+      "q": "Como faço para agendar?",
+      "a": "Escolha os serviços, o dia e o horário aqui no site e toque em Finalizar pelo WhatsApp. A mensagem já vai pronta, é só enviar e aguardar a confirmação."
+    },
+    {
+      "q": "O valor do site é o valor final?",
+      "a": "O total mostrado é uma estimativa com base na tabela. O valor final é confirmado na conversa pelo WhatsApp."
+    },
+    {
+      "q": "Posso escolher mais de um serviço?",
+      "a": "Pode sim. Toque em todos os serviços que quiser e o total é somado automaticamente."
+    }
+  ],
+  "analytics": "",
+  "ocupadoData": "",
+  "ocupados": {},
   "whatsapp": "5581992776298",
   "instagram": "phranciely.gomes",
   "email": "Horranagomes903@gmail.com",
@@ -84,24 +103,5 @@
       "src": "fotos/1792271581556-0.jpg",
       "legenda": ""
     }
-  ],
-  "endereco": "",
-  "enderecoNota": "",
-  "analytics": "",
-  "ocupadoData": "",
-  "faq": [
-    {
-      "q": "Como faço para agendar?",
-      "a": "Escolha os serviços, o dia e o horário aqui no site e toque em Finalizar pelo WhatsApp. A mensagem já vai pronta, é só enviar e aguardar a confirmação."
-    },
-    {
-      "q": "O valor do site é o valor final?",
-      "a": "O total mostrado é uma estimativa com base na tabela. O valor final é confirmado na conversa pelo WhatsApp."
-    },
-    {
-      "q": "Posso escolher mais de um serviço?",
-      "a": "Pode sim. Toque em todos os serviços que quiser e o total é somado automaticamente."
-    }
-  ],
-  "ocupados": {}
+  ]
 }
