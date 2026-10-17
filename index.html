@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PH Nail Designer | Agendamentos</title>
+<meta name="description" content="PH Nail Designer: blindagem, banho de gel, esmaltação em gel e mais. Veja os valores, escolha o horário e agende pelo WhatsApp.">
+<meta name="theme-color" content="#12051f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PH Nail Designer | Agendamentos">
+<meta property="og:description" content="Veja os valores, escolha o horário e agende pelo WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12051f;
+    --card: rgba(255,255,255,.04);
+    --line: rgba(192,132,252,.35);
+    --lilac: #c084fc;
+    --lilac-soft: #e9d5ff;
+    --text: #f3e8ff;
+    --muted: #b79ad6;
+    --ink: #12051f;
+    --warn: #fcd34d;
+    --glow: 0 0 18px rgba(168,85,247,.45);
+    --display: "Playfair Display", Georgia, serif;
+    --body: "Cormorant Garamond", Georgia, serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  body {
+    background:
+      radial-gradient(900px 500px at 50% -100px, rgba(124,58,237,.35), transparent 70%),
+      radial-gradient(600px 400px at 100% 100%, rgba(168,85,247,.2), transparent 70%),
+      var(--bg);
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 19px;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+  :focus-visible { outline: 2px solid var(--lilac); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 720px; margin: 0 auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+
+  /* Header */
+  header { text-align: center; padding: 44px 0 20px; }
+  .logo-text {
+    font-family: var(--display); font-size: 84px; line-height: 1; letter-spacing: -4px;
+    background: linear-gradient(180deg, #fff 0%, #d8b4fe 60%, #a855f7 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 14px rgba(168,85,247,.55));
+  }
+  .logo-img { display: block; margin: 0 auto; max-width: min(240px, 70%); height: auto; filter: drop-shadow(0 0 14px rgba(168,85,247,.55)); }
+  .tag {
+    display: flex; align-items: center; gap: 14px; justify-content: center;
+    letter-spacing: .4em; text-transform: uppercase; font-size: 15px; color: var(--lilac-soft); margin-top: 6px;
+  }
+  .tag::before, .tag::after { content: ""; height: 1px; width: 46px; background: var(--line); }
+  .lead { margin: 20px auto 0; max-width: 460px; color: var(--muted); font-size: 20px; text-wrap: balance; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-align: center;
+    padding: 14px 26px; border-radius: 999px; text-decoration: none; cursor: pointer;
+    font-family: inherit; font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    border: 1px solid var(--lilac); color: var(--text); background: transparent;
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); background: rgba(168,85,247,.15); }
+  .btn.primary { background: linear-gradient(135deg, #a855f7, #7c3aed); border-color: transparent; box-shadow: var(--glow); }
+  .btn.primary:hover { background: linear-gradient(135deg, #b672ff, #8b4bf0); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
+
+  .aviso {
+    margin: 4px 0 0; padding: 12px 16px; border: 1px solid rgba(252,211,77,.5); border-radius: 16px;
+    background: rgba(252,211,77,.08); color: var(--warn); text-align: center; overflow-wrap: anywhere;
+  }
+
+  /* Passos */
+  .passos { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 28px; text-align: left; }
+  .passos li { border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; min-width: 0; background: var(--card); }
+  .passos b { display: block; font-family: var(--display); font-size: 15px; color: var(--lilac); letter-spacing: .08em; }
+  .passos span { font-size: 16px; color: var(--lilac-soft); line-height: 1.3; display: block; margin-top: 2px; }
+
+  /* Sections */
+  section { padding: 36px 0; }
+  h2 {
+    font-family: var(--display); font-weight: 600; text-align: center;
+    font-size: 32px; letter-spacing: .02em; text-wrap: balance;
+    background: linear-gradient(180deg, #fff, #c9a0ff); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { text-align: center; color: var(--muted); letter-spacing: .3em; text-transform: uppercase; font-size: 14px; margin: 4px 0 22px; }
+  .divider { text-align: center; color: var(--lilac); margin: 0 0 6px; font-size: 18px; }
+  .hint { text-align: center; color: var(--muted); font-size: 16px; margin-top: 8px; }
+
+  /* Valores */
+  .list { list-style: none; border-top: 1px solid var(--line); }
+  .item {
+    display: flex; align-items: center; gap: 14px; padding: 18px 6px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .15s;
+  }
+  .item:hover { background: rgba(168,85,247,.07); }
+  .item.sel { background: rgba(168,85,247,.14); }
+  .item .info { flex: 1; min-width: 0; }
+  .item .name { letter-spacing: .12em; text-transform: uppercase; font-size: 17px; color: var(--lilac-soft); overflow-wrap: anywhere; }
+  .item .note { font-size: 14px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; overflow-wrap: anywhere; }
+  .item .price { font-family: var(--display); font-size: 28px; color: var(--lilac-soft); white-space: nowrap; text-shadow: 0 0 12px rgba(168,85,247,.5); font-variant-numeric: tabular-nums; }
+  .item .price small { font-family: var(--body); font-size: 16px; margin-right: 4px; color: var(--muted); }
+  .item .book { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 15px; color: var(--lilac-soft); white-space: nowrap; transition: .15s; }
+  .item.sel .book { background: var(--lilac); color: var(--ink); border-color: var(--lilac); }
+  .combo-tag { display: inline-block; font-size: 12px; letter-spacing: .15em; padding: 1px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--lilac); margin-left: 8px; vertical-align: middle; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px 6px 0; color: var(--muted); }
+  .total b { font-family: var(--display); font-size: 26px; color: var(--lilac-soft); font-variant-numeric: tabular-nums; }
+  .next { text-align: center; margin-top: 20px; }
+
+  /* Horários */
+  .day { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px 18px; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px; }
+  .slot {
+    text-align: center; padding: 10px 0; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); color: var(--text); background: transparent;
+    font-family: inherit; font-size: 20px; font-variant-numeric: tabular-nums; transition: .15s;
+    display: flex; flex-direction: column; align-items: center; line-height: 1.15;
+  }
+  .slot:hover:not(:disabled) { background: rgba(168,85,247,.2); border-color: var(--lilac); box-shadow: var(--glow); }
+  .slot.sel { background: linear-gradient(135deg, #a855f7, #7c3aed); border-color: transparent; box-shadow: var(--glow); }
+  .slot:disabled { cursor: not-allowed; opacity: .45; text-decoration: line-through; }
+  .slot small { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; display: block; }
+  .vazio { text-align: center; color: var(--muted); }
+  .resumo { text-align: center; margin-top: 20px; padding: 18px; border: 1px dashed var(--line); border-radius: 18px; }
+  .resumo p { color: var(--muted); margin-bottom: 12px; overflow-wrap: anywhere; }
+  .resumo p:last-child { margin-bottom: 0; }
+  .resumo p b { color: var(--lilac-soft); font-weight: 600; }
+
+  /* Contato */
+  .contact { text-align: center; }
+  .contact .links { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px; }
+  .contact .links .btn { width: 100%; max-width: 360px; }
+  .contact .links .btn span { min-width: 0; overflow-wrap: anywhere; }
+
+  footer { text-align: center; color: var(--muted); font-size: 15px; padding: 26px 0 60px; letter-spacing: .1em; }
+
+  .float {
+    position: fixed; z-index: 10;
+    right: calc(18px + env(safe-area-inset-right, 0px));
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+    background: linear-gradient(135deg, #a855f7, #7c3aed); box-shadow: 0 6px 24px rgba(124,58,237,.6);
+    text-decoration: none;
+  }
+  .float svg { width: 30px; height: 30px; fill: #fff; }
+
+  @media (max-width: 480px) {
+    body { font-size: 18px; }
+    .logo-text { font-size: 70px; }
+    .item { flex-wrap: wrap; }
+    .item .book { order: 3; }
+    .passos { grid-template-columns: 1fr; }
+    .passos li { display: flex; gap: 12px; align-items: baseline; }
+    .passos b { flex: none; }
+    .passos span { margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <img class="logo-img" id="logo" src="logo.png" alt="PH Nail Designer" hidden>
+    <div id="logo-text">
+      <div class="logo-text" aria-label="PH">PH</div>
+      <div class="tag">Nail Designer</div>
+    </div>
+    <p class="lead">Unhas cuidadas, com delicadeza e acabamento de verdade. Escolha seu serviço e agende.</p>
+    <div class="cta">
+      <a class="btn primary" id="cta-whats" href="#" target="_blank" rel="noopener">Agendar no WhatsApp</a>
+      <a class="btn" id="cta-insta" href="#" target="_blank" rel="noopener">Ver trabalhos no Instagram</a>
+    </div>
+    <ol class="passos" aria-label="Como agendar">
+      <li><b>1º</b><span>Escolha os serviços</span></li>
+      <li><b>2º</b><span>Escolha o horário</span></li>
+      <li><b>3º</b><span>Confirme pelo WhatsApp</span></li>
+    </ol>
+  </header>
+
+  <div class="aviso" id="aviso" role="status" hidden></div>
+
+  <section id="valores">
+    <div class="divider" aria-hidden="true">♡</div>
+    <h2>Tabela de Valores</h2>
+    <div class="sub">Nails</div>
+    <ul class="list" id="lista"></ul>
+    <div class="total" id="total" hidden><span>Total estimado</span><b id="total-valor">R$ 0,00</b></div>
+    <div class="next" id="next" hidden>
+      <a class="btn primary" href="#horarios">Continuar e escolher o horário ↓</a>
+    </div>
+  </section>
+
+  <section id="horarios">
+    <div class="divider" aria-hidden="true">♡</div>
+    <h2>Horários Disponíveis</h2>
+    <div class="sub">Escolha o horário</div>
+    <div id="agenda"></div>
+    <div class="resumo" id="resumo"></div>
+    <p class="hint">Não achou um horário bom? Chame no WhatsApp que a gente combina.</p>
+  </section>
+
+  <section id="contato" class="contact">
+    <div class="divider" aria-hidden="true">♡</div>
+    <h2>Agendamentos</h2>
+    <div class="sub">Fale direto com a gente</div>
+    <div class="links">
+      <a class="btn primary" id="contact-whats" href="#" target="_blank" rel="noopener"><span></span></a>
+      <a class="btn" id="contact-insta" href="#" target="_blank" rel="noopener"><span></span></a>
+      <a class="btn" id="contact-mail" href="#"><span></span></a>
+    </div>
+  </section>
+
+  <footer>© <span id="ano"></span> PH Nail Designer</footer>
+</div>
+
+<a class="float" id="float-whats" href="#" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.04 3C9.4 3 4 8.4 4 15.04c0 2.12.55 4.18 1.6 6L4 28l7.1-1.86a12 12 0 0 0 4.94 1.06C22.68 27.2 28 21.8 28 15.16 28 8.5 22.68 3 16.04 3Zm0 21.9c-1.66 0-3.28-.45-4.7-1.3l-.34-.2-4.2 1.1 1.12-4.1-.22-.36a9.9 9.9 0 0 1-1.52-5.3c0-5.5 4.48-9.96 9.98-9.96 5.5 0 9.96 4.46 9.96 9.96s-4.46 10.16-9.98 10.16Zm5.46-7.46c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.35.22-.65.08-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.5-1.8-1.68-2.1-.18-.3-.02-.46.13-.6.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.64-.93-2.25-.25-.6-.5-.5-.68-.5h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.03-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.1 3.2 5.1 4.5.72.3 1.28.5 1.7.64.72.22 1.37.2 1.88.12.58-.08 1.78-.72 2.03-1.43.25-.7.25-1.3.18-1.43-.08-.12-.28-.2-.58-.35Z"/></svg>
+</a>
+
+<script>
+/* Valores de reserva: usados só se o config.json não carregar.
+   Para mudar preços e horários, use o painel em admin.html. */
+const PADRAO = {
+  whatsapp: "5581992776298",
+  instagram: "phranciely.gomes",
+  email: "Horranagomes903@gmail.com",
+  aviso: "",
+  servicos: [
+    { nome: "Blindagem", preco: 50 },
+    { nome: "Esmaltação em gel", preco: 40 },
+    { nome: "Esmaltação tradicional", preco: 25, nota: "Só mão ou pé · juntos fica por R$ 40" },
+    { nome: "Remoção de alongamento", preco: 25 },
+    { nome: "Remoção de esmaltação em gel", preco: 15 },
+    { nome: "Combo Blindagem + Esmaltação", preco: 60, combo: true },
+    { nome: "Banho de gel", preco: 60 },
+    { nome: "Combo Banho de gel + Esmaltação em gel", preco: 70, combo: true }
+  ],
+  horarios: ["09:00", "11:00", "14:00", "16:00", "18:00"].map(h => ({ hora: h, ocupado: false }))
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const brl = n => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const brlNum = n => Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+let cfg = PADRAO;
+const servicosSel = new Set();
+let horarioSel = null;
+
+const wa = msg => `https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
+const foneBonito = n => {
+  const d = String(n).replace(/\D/g, "").replace(/^55/, "");
+  return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d;
+};
+
+async function carregar() {
+  try {
+    const r = await fetch("config.json?v=" + Date.now(), { cache: "no-store" });
+    if (r.ok) {
+      const j = await r.json();
+      if (j && Array.isArray(j.servicos) && Array.isArray(j.horarios)) cfg = { ...PADRAO, ...j };
+    }
+  } catch (e) { /* abre com os valores de reserva */ }
+  desenhar();
+}
+
+function desenhar() {
+  // Links de contato
+  const geral = wa("Oi! Vim pelo site e gostaria de agendar um horário 💜");
+  ["cta-whats", "contact-whats", "float-whats"].forEach(id => $(id).href = geral);
+  const insta = `https://instagram.com/${encodeURIComponent(cfg.instagram)}`;
+  $("cta-insta").href = insta; $("contact-insta").href = insta;
+  $("contact-whats").firstElementChild.textContent = `WhatsApp · ${foneBonito(cfg.whatsapp)}`;
+  $("contact-insta").firstElementChild.textContent = `Instagram · @${cfg.instagram}`;
+  $("contact-mail").href = `mailto:${cfg.email}`;
+  $("contact-mail").firstElementChild.textContent = cfg.email;
+
+  // Aviso
+  const av = (cfg.aviso || "").trim();
+  $("aviso").hidden = !av; $("aviso").textContent = av;
+
+  // Serviços
+  $("lista").innerHTML = cfg.servicos.map((s, i) => `
+    <li class="item" data-i="${i}" role="button" tabindex="0" aria-pressed="false">
+      <div class="info">
+        <div class="name">${esc(s.nome)}${s.combo ? '<span class="combo-tag">COMBO</span>' : ""}</div>
+        ${s.nota ? `<div class="note">${esc(s.nota)}</div>` : ""}
+      </div>
+      <div class="price"><small>R$</small>${brlNum(s.preco)}</div>
+      <span class="book">Escolher</span>
+    </li>`).join("");
+
+  // Horários
+  const hs = cfg.horarios;
+  const livres = hs.filter(h => !h.ocupado).length;
+  if (horarioSel && !hs.some(h => h.hora === horarioSel && !h.ocupado)) horarioSel = null;
+  $("agenda").innerHTML = hs.length ? `
+    <div class="day"><div class="slots">
+      ${hs.map(h => `<button type="button" class="slot" data-h="${esc(h.hora)}" ${h.ocupado ? "disabled" : ""}>${esc(h.hora)}${h.ocupado ? "<small>ocupado</small>" : ""}</button>`).join("")}
+    </div></div>
+    ${livres ? "" : '<p class="hint">Todos os horários estão ocupados no momento. Chame no WhatsApp para entrar na lista de espera.</p>'}`
+    : '<p class="vazio">Sem horários abertos no momento. Chame no WhatsApp para consultar a agenda.</p>';
+
+  $("ano").textContent = new Date().getFullYear();
+  atualizar();
+}
+
+function atualizar() {
+  document.querySelectorAll("#lista .item").forEach(li => {
+    const on = servicosSel.has(+li.dataset.i);
+    li.classList.toggle("sel", on);
+    li.setAttribute("aria-pressed", on);
+    li.querySelector(".book").textContent = on ? "✓ Escolhido" : "Escolher";
+  });
+  document.querySelectorAll("#agenda .slot").forEach(b => b.classList.toggle("sel", b.dataset.h === horarioSel));
+
+  const idx = [...servicosSel].sort((a, b) => a - b);
+  const sel = idx.map(i => cfg.servicos[i]).filter(Boolean);
+  const nomes = sel.map(s => s.nome);
+  const soma = sel.reduce((t, s) => t + Number(s.preco || 0), 0);
+
+  $("next").hidden = !sel.length;
+  $("total").hidden = !sel.length;
+  $("total-valor").textContent = brl(soma);
+
+  const r = $("resumo");
+  if (!sel.length) {
+    r.innerHTML = `<p>Escolha um serviço na tabela de valores para começar.</p>`;
+  } else if (!horarioSel) {
+    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Total estimado:</b> ${brl(soma)}<br>Agora escolha um horário acima.</p>`;
+  } else {
+    const msg = `Oi! Gostaria de agendar: ${nomes.join(" + ")} às ${horarioSel} (total estimado ${brl(soma)}). Quais dias você tem disponível? 💜`;
+    r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Horário:</b> ${esc(horarioSel)}<br><b>Total estimado:</b> ${brl(soma)}</p>
+      <a class="btn primary" target="_blank" rel="noopener" href="${wa(msg)}">Finalizar pelo WhatsApp</a>`;
+  }
+}
+
+$("lista").addEventListener("click", e => {
+  const li = e.target.closest(".item"); if (!li) return;
+  const i = +li.dataset.i;
+  servicosSel.has(i) ? servicosSel.delete(i) : servicosSel.add(i);
+  atualizar();
+});
+$("lista").addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.target.closest(".item")?.click(); }
+});
+$("agenda").addEventListener("click", e => {
+  const b = e.target.closest(".slot"); if (!b || b.disabled) return;
+  horarioSel = horarioSel === b.dataset.h ? null : b.dataset.h;
+  atualizar();
+});
+
+// Logo: usa logo.png se existir; senão mostra o PH em texto
+(() => {
+  const img = $("logo");
+  img.onload = () => { img.hidden = false; $("logo-text").hidden = true; };
+  img.onerror = () => { img.hidden = true; };
+  if (img.complete && img.naturalWidth) img.onload();
+})();
+
+desenhar();
+carregar();
+</script>
+</body>
+</html>

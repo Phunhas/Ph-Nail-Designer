@@ -1,0 +1,23 @@
+{
+  "whatsapp": "5581992776298",
+  "instagram": "phranciely.gomes",
+  "email": "Horranagomes903@gmail.com",
+  "aviso": "",
+  "servicos": [
+    { "nome": "Blindagem", "preco": 50, "nota": "", "combo": false },
+    { "nome": "Esmaltação em gel", "preco": 40, "nota": "", "combo": false },
+    { "nome": "Esmaltação tradicional", "preco": 25, "nota": "Só mão ou pé · juntos fica por R$ 40", "combo": false },
+    { "nome": "Remoção de alongamento", "preco": 25, "nota": "", "combo": false },
+    { "nome": "Remoção de esmaltação em gel", "preco": 15, "nota": "", "combo": false },
+    { "nome": "Combo Blindagem + Esmaltação", "preco": 60, "nota": "", "combo": true },
+    { "nome": "Banho de gel", "preco": 60, "nota": "", "combo": false },
+    { "nome": "Combo Banho de gel + Esmaltação em gel", "preco": 70, "nota": "", "combo": true }
+  ],
+  "horarios": [
+    { "hora": "09:00", "ocupado": false },
+    { "hora": "11:00", "ocupado": false },
+    { "hora": "14:00", "ocupado": false },
+    { "hora": "16:00", "ocupado": false },
+    { "hora": "18:00", "ocupado": false }
+  ]
+}
