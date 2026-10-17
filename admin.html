@@ -24,7 +24,7 @@
   h2 { font-size: 18px; color: var(--soft); margin-bottom: 4px; }
   .help { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
   label { display: block; font-size: 14px; color: var(--muted); margin: 10px 0 4px; }
-  input[type=text], input[type=password], input[type=number], input[type=time], textarea {
+  input[type=text], input[type=password], input[type=number], input[type=time], input[type=date], textarea {
     width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line);
     background: var(--field); color: #fff; font: inherit; min-width: 0;
   }
@@ -43,8 +43,14 @@
   .row .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .check { display: inline-flex; align-items: center; gap: 8px; color: var(--soft); font-size: 15px; margin: 0; }
   .check input { width: 20px; height: 20px; accent-color: #a855f7; }
-  .hrow { display: grid; grid-template-columns: 120px 1fr auto; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .hrow { display: grid; grid-template-columns: 140px auto; gap: 10px; align-items: center; margin-bottom: 10px; }
   .hrow .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sl { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin: 12px 0; }
+  .sl button { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 10px 6px; border-radius: 14px; border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 18px; cursor: pointer; font-family: inherit; }
+  .sl button small { font-size: 12px; color: var(--ok); }
+  .sl button.busy { border-color: rgba(252,211,77,.55); background: rgba(252,211,77,.1); color: var(--warn); text-decoration: line-through; }
+  .sl button.busy small { color: var(--warn); text-decoration: none; }
+  .dchip { display: inline-block; margin: 4px 6px 0 0; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(252,211,77,.5); color: var(--warn); background: transparent; font-size: 14px; cursor: pointer; font-family: inherit; }
   .badge { font-size: 14px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--ok); text-align: center; }
   .badge.busy { color: var(--warn); border-color: rgba(252,211,77,.5); }
   input[type=file] { width: 100%; color: var(--muted); margin: 6px 0 12px; font: inherit; font-size: 15px; }
@@ -65,8 +71,7 @@
   .small { font-size: 14px; color: var(--muted); }
   [hidden] { display: none !important; }
   @media (max-width: 460px) {
-    .hrow { grid-template-columns: 1fr 1fr; }
-    .hrow .acts { grid-column: 1 / -1; }
+    .hrow { grid-template-columns: 1fr auto; }
     .row .two { grid-template-columns: 1fr 100px; }
   }
 </style>
@@ -96,14 +101,24 @@
     </div>
 
     <div class="card">
-      <h2>Horários</h2>
-      <p class="help">Toque em "Marcar ocupado" quando um horário for reservado. Ele continua aparecendo para as clientes, mas sem poder escolher. O "ocupado" vale só para hoje: amanhã tudo volta livre sozinho.</p>
-      <div id="horarios"></div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px">
-        <button type="button" class="ghost mini" id="add-hora">+ Adicionar horário</button>
-        <button type="button" class="ghost mini" id="ocupar-todos">Marcar o dia todo ocupado</button>
-        <button type="button" class="ghost mini" id="liberar-todos">Liberar todos</button>
+      <h2>Agenda por dia</h2>
+      <p class="help">Escolha o dia e toque nos horários que já foram reservados. Só aquele dia fica ocupado, os outros não mudam. Os dias passados saem sozinhos.</p>
+      <label for="dia-ocup">Dia</label>
+      <input type="date" id="dia-ocup">
+      <div class="sl" id="slots-dia"></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button type="button" class="ghost mini" id="ocupar-dia">Marcar o dia todo ocupado</button>
+        <button type="button" class="ghost mini" id="liberar-dia">Liberar o dia</button>
       </div>
+      <p class="small" style="margin-top:14px" id="resumo-dias-t">Dias com horários ocupados:</p>
+      <div id="resumo-dias"></div>
+    </div>
+
+    <div class="card">
+      <h2>Horários de atendimento</h2>
+      <p class="help">Os horários que ela atende, iguais em todos os dias.</p>
+      <div id="horarios"></div>
+      <button type="button" class="ghost mini" id="add-hora">+ Adicionar horário</button>
     </div>
 
     <div class="card">
@@ -218,11 +233,13 @@ async function carregar() {
     cfg = JSON.parse(fromB64(j.content));
     cfg.servicos = cfg.servicos || []; cfg.horarios = cfg.horarios || []; cfg.fotos = cfg.fotos || [];
     cfg.faq = Array.isArray(cfg.faq) ? cfg.faq : [];
-    let virouDia = false;
-    if (cfg.ocupadoData && cfg.ocupadoData !== hojeISO() && cfg.horarios.some(h => h.ocupado)) { cfg.horarios.forEach(h => h.ocupado = false); virouDia = true; }
+    if (!cfg.ocupados || typeof cfg.ocupados !== "object") cfg.ocupados = {};
+    // converte o modelo antigo (ocupado por horário, só para um dia) para o novo (por data)
+    const antigos = cfg.horarios.filter(h => h.ocupado).map(h => h.hora);
+    if (antigos.length) { const d = cfg.ocupadoData || hojeISO(); if (d >= hojeISO()) cfg.ocupados[d] = [...new Set([...(cfg.ocupados[d] || []), ...antigos])].sort(); cfg.horarios.forEach(h => h.ocupado = false); }
     store.set("repo", repo); store.set("token", token);
     $("editor").hidden = false; $("conexao").hidden = true; $("sair").hidden = false;
-    preencher(); msg(virouDia ? "Os horários ocupados de ontem foram liberados. Toque em Salvar no site para confirmar." : "Pronto para editar.", "ok");
+    preencher(); msg("Pronto para editar.", "ok");
   } catch (e) { msg(e.message || "Não consegui carregar.", "err"); }
 }
 
@@ -235,7 +252,8 @@ function preencher() {
   $("enderecoNota").value = cfg.enderecoNota || "";
   $("analytics").value = cfg.analytics || "";
   desenharFaq();
-  desenharHorarios(); desenharServicos(); desenharFotos();
+  $("dia-ocup").min = hojeISO(); if (!$("dia-ocup").value) $("dia-ocup").value = hojeISO();
+  desenharHorarios(); desenharDia(); desenharServicos(); desenharFotos();
 }
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -244,13 +262,36 @@ function desenharHorarios() {
   $("horarios").innerHTML = cfg.horarios.length ? cfg.horarios.map((h, i) => `
     <div class="hrow" data-i="${i}">
       <input type="time" data-f="hora" value="${esc(h.hora)}" aria-label="Horário ${i + 1}">
-      <span class="badge ${h.ocupado ? "busy" : ""}">${h.ocupado ? "Ocupado" : "Livre"}</span>
       <div class="acts">
-        <button type="button" class="ghost mini" data-a="toggle">${h.ocupado ? "Liberar" : "Marcar ocupado"}</button>
         <button type="button" class="danger mini" data-a="del" aria-label="Remover horário">Remover</button>
       </div>
     </div>`).join("") : '<p class="help">Nenhum horário. Adicione o primeiro abaixo.</p>';
 }
+
+const fmtDia = iso => iso.split("-").reverse().slice(0, 2).join("/");
+const horasValidas = () => [...new Set(cfg.horarios.map(h => h.hora).filter(h => /^\d{2}:\d{2}$/.test(h || "")))].sort();
+function desenharDia() {
+  const dia = $("dia-ocup").value, hs = horasValidas(), oc = new Set((cfg.ocupados || {})[dia] || []);
+  $("slots-dia").innerHTML = !dia ? '<p class="help">Escolha um dia acima.</p>' : hs.length ? hs.map(h => `<button type="button" data-h="${h}" class="${oc.has(h) ? "busy" : ""}">${h}<small>${oc.has(h) ? "ocupado" : "livre"}</small></button>`).join("") : '<p class="help">Cadastre os horários de atendimento abaixo.</p>';
+  const dias = Object.keys(cfg.ocupados || {}).filter(d => d >= hojeISO() && cfg.ocupados[d].length).sort();
+  $("resumo-dias-t").textContent = dias.length ? "Dias com horários ocupados (toque para abrir):" : "Nenhum dia com horário ocupado.";
+  $("resumo-dias").innerHTML = dias.map(d => `<button type="button" class="dchip" data-d="${d}">${fmtDia(d)} · ${cfg.ocupados[d].length}</button>`).join("");
+}
+function setOcup(dia, lista) {
+  cfg.ocupados = cfg.ocupados || {};
+  if (lista.length) cfg.ocupados[dia] = lista; else delete cfg.ocupados[dia];
+  desenharDia();
+}
+$("dia-ocup").addEventListener("change", desenharDia);
+$("slots-dia").addEventListener("click", e => {
+  const b = e.target.closest("button[data-h]"), dia = $("dia-ocup").value; if (!b || !dia) return;
+  const L = new Set((cfg.ocupados || {})[dia] || []);
+  L.has(b.dataset.h) ? L.delete(b.dataset.h) : L.add(b.dataset.h);
+  setOcup(dia, [...L].sort());
+});
+$("resumo-dias").addEventListener("click", e => { const b = e.target.closest("button[data-d]"); if (b) { $("dia-ocup").value = b.dataset.d; desenharDia(); } });
+$("ocupar-dia").onclick = () => { const d = $("dia-ocup").value; if (d) setOcup(d, horasValidas()); };
+$("liberar-dia").onclick = () => { const d = $("dia-ocup").value; if (d) setOcup(d, []); };
 
 function desenharFaq() {
   $("faq").innerHTML = (cfg.faq || []).length ? cfg.faq.map((f, i) => `
@@ -288,7 +329,6 @@ $("faq").addEventListener("click", e => {
   cfg.faq.splice(+b.closest("[data-i]").dataset.i, 1); desenharFaq();
 });
 $("add-faq").onclick = () => { (cfg.faq = cfg.faq || []).push({ q: "", a: "" }); desenharFaq(); $("faq").lastElementChild.querySelector("input").focus(); };
-$("ocupar-todos").onclick = () => { cfg.horarios.forEach(h => h.ocupado = true); desenharHorarios(); msg("Todos os horários de hoje marcados como ocupados. Toque em Salvar no site.", "ok"); };
 
 // Edição dos campos
 $("servicos").addEventListener("input", e => {
@@ -298,7 +338,7 @@ $("servicos").addEventListener("input", e => {
 });
 $("horarios").addEventListener("input", e => {
   const row = e.target.closest("[data-i]"); if (!row || e.target.dataset.f !== "hora") return;
-  cfg.horarios[+row.dataset.i].hora = e.target.value;
+  cfg.horarios[+row.dataset.i].hora = e.target.value; desenharDia();
 });
 
 // Botões das linhas
@@ -313,14 +353,12 @@ $("servicos").addEventListener("click", e => {
 $("horarios").addEventListener("click", e => {
   const b = e.target.closest("button[data-a]"); if (!b) return;
   const i = +b.closest("[data-i]").dataset.i, a = b.dataset.a;
-  if (a === "toggle") cfg.horarios[i].ocupado = !cfg.horarios[i].ocupado;
   if (a === "del") { if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "Confirmar remoção"; return; } cfg.horarios.splice(i, 1); }
-  desenharHorarios();
+  desenharHorarios(); desenharDia();
 });
 
 $("add-servico").onclick = () => { cfg.servicos.push({ nome: "", preco: "", nota: "", combo: false }); desenharServicos(); $("servicos").lastElementChild.querySelector("input").focus(); };
-$("add-hora").onclick = () => { cfg.horarios.push({ hora: "", ocupado: false }); desenharHorarios(); $("horarios").lastElementChild.querySelector("input").focus(); };
-$("liberar-todos").onclick = () => { cfg.horarios.forEach(h => h.ocupado = false); desenharHorarios(); };
+$("add-hora").onclick = () => { cfg.horarios.push({ hora: "", ocupado: false }); desenharHorarios(); desenharDia(); $("horarios").lastElementChild.querySelector("input").focus(); };
 $("conectar").onclick = carregar;
 $("sair").onclick = () => {
   if (!confirm("Sair do painel? Alterações não salvas serão perdidas e será preciso entrar de novo com o token.")) return;
@@ -431,9 +469,14 @@ function validar() {
   for (const h of cfg.horarios) {
     if (!/^\d{2}:\d{2}$/.test(h.hora || "")) throw new Error("Há um horário em branco ou inválido.");
     if (vistos.has(h.hora)) throw new Error(`O horário ${h.hora} está repetido.`);
-    vistos.add(h.hora); horarios.push({ hora: h.hora, ocupado: !!h.ocupado });
+    vistos.add(h.hora); horarios.push({ hora: h.hora, ocupado: false });
   }
   horarios.sort((a, b) => a.hora.localeCompare(b.hora));
+  const ocupados = {};
+  for (const [d, L] of Object.entries(cfg.ocupados || {})) {
+    const hs = [...new Set(L)].filter(x => vistos.has(x)).sort();
+    if (d >= hojeISO() && hs.length) ocupados[d] = hs;
+  }
   const whatsapp = $("whats").value.replace(/\D/g, "");
   if (whatsapp.length < 12) throw new Error("WhatsApp incompleto. Use 55 + DDD + número.");
   const email = $("email").value.trim();
@@ -444,7 +487,7 @@ function validar() {
   if (analytics && !/^[a-z0-9-]{2,40}$/.test(analytics)) throw new Error("Código do contador inválido. Use só letras minúsculas, números e hífen.");
   return {
     endereco: $("endereco").value.trim(), enderecoNota: $("enderecoNota").value.trim(),
-    faq, analytics, ocupadoData: horarios.some(h => h.ocupado) ? hojeISO() : "",
+    faq, analytics, ocupadoData: "", ocupados,
     whatsapp, instagram: $("insta").value.trim().replace(/^@/, ""), email,
     aviso: $("aviso").value.trim(), servicos, horarios,
     fotos: (cfg.fotos || []).map(f => ({ src: f.src, legenda: String(f.legenda || "").trim().slice(0, 80) }))

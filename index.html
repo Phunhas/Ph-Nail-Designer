@@ -256,7 +256,9 @@
   @keyframes nailSheen { 0% { transform: translateX(-60px) skewX(-20deg); } 14%, 100% { transform: translateX(80px) skewX(-20deg); } }
 
   /* ---------- Dias ---------- */
-  .dias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+  .dias { display: flex; gap: 8px; margin: 0 -18px 18px; padding: 4px 18px 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .dias::-webkit-scrollbar { display: none; }
+  .dias .dia { flex: none; min-width: 84px; scroll-snap-align: start; }
   .dia {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 58px; padding: 8px 6px;
     border: 1px solid var(--line); border-radius: 18px; background: transparent; color: var(--text); cursor: pointer; font-family: inherit;
@@ -445,7 +447,7 @@
     <section id="horarios">
       <div class="rv">
         <h2>Horários Disponíveis</h2>
-        <p class="sub">Escolha o dia e o horário. Quem prefere outro dia combina direto na conversa.</p>
+        <p class="sub">Escolha o dia e o horário. Passe para o lado para ver os próximos dias.</p>
       </div>
       <div class="dias rv" id="dias" role="group" aria-label="Dia do atendimento"></div>
       <div id="agenda" class="rv"></div>
@@ -555,11 +557,33 @@ const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let cfg = PADRAO;
 const servicosSel = new Set();
 let horarioSel = null;
-let diaSel = "hoje";
+let diaSel = "";
 
 const hojeISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const isoDe = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const dataCurta = d => d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" }).replace(".,", "").replace(".", "");
-const diaData = id => { const d = new Date(); if (id === "amanha") d.setDate(d.getDate() + 1); return dataCurta(d); };
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+// próximos 7 dias a partir de hoje (hora do aparelho)
+function proximosDias() {
+  const base = new Date(); base.setHours(12, 0, 0, 0);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(base); d.setDate(base.getDate() + i);
+    const dm = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    return { iso: isoDe(d), nome: i === 0 ? "Hoje" : i === 1 ? "Amanhã" : cap(d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")), sub: dm, d, i };
+  });
+}
+const ehHoje = () => diaSel === isoDe(new Date());
+function descDia() {
+  if (diaSel === "outro") return null;
+  const x = proximosDias().find(y => y.iso === diaSel); if (!x) return null;
+  return { x, curta: dataCurta(x.d), longa: x.d.toLocaleDateString("pt-BR", { weekday: "long" }) + " (" + x.sub + ")" };
+}
+function ocupadasDe(iso) {
+  if (cfg.ocupados && typeof cfg.ocupados === "object") return new Set(cfg.ocupados[iso] || []);
+  // modelo antigo: "ocupado" por horário, valendo só para hoje
+  const vale = iso === isoDe(new Date()) && (!cfg.ocupadoData || cfg.ocupadoData === iso);
+  return new Set(vale ? cfg.horarios.filter(h => h.ocupado).map(h => h.hora) : []);
+}
 
 const wa = msg => `https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(msg)}`;
 const foneBonito = n => {
@@ -635,16 +659,18 @@ function desenhar() {
 }
 
 function desenharDias() {
-  const itens = [["hoje", "Hoje", diaData("hoje")], ["amanha", "Amanhã", diaData("amanha")], ["outro", "Outro dia", "a combinar"]];
+  const dias = proximosDias();
+  if (!diaSel || (diaSel !== "outro" && !dias.some(d => d.iso === diaSel))) diaSel = dias[0].iso;
+  const itens = [...dias.map(d => [d.iso, d.nome, d.sub]), ["outro", "Outro dia", "combinar"]];
   $("dias").innerHTML = itens.map(([id, nome, sub]) => `<button type="button" class="dia${id === diaSel ? " sel" : ""}" data-d="${id}" aria-pressed="${id === diaSel}"><b>${nome}</b><small>${esc(sub)}</small></button>`).join("");
 }
 
 function desenharAgenda() {
   const agora = new Date(), hhmm = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
-  const ocupadoVale = diaSel === "hoje" && (!cfg.ocupadoData || cfg.ocupadoData === hojeISO());
+  const ocup = ocupadasDe(diaSel), hoje = ehHoje();
   const hs = cfg.horarios.map(h => {
-    const passou = diaSel === "hoje" && h.hora <= hhmm;
-    const ocupado = !passou && ocupadoVale && !!h.ocupado;
+    const passou = hoje && h.hora <= hhmm;
+    const ocupado = !passou && ocup.has(h.hora);
     return { hora: h.hora, passou, ocupado, off: passou || ocupado };
   });
   const livres = hs.filter(h => !h.off).length;
@@ -653,7 +679,7 @@ function desenharAgenda() {
     <div class="day"><div class="slots">
       ${hs.map(h => `<button type="button" class="slot${h.passou ? " passou" : ""}" data-h="${esc(h.hora)}" ${h.off ? "disabled" : ""}>${esc(h.hora)}${h.ocupado ? "<small>ocupado</small>" : h.passou ? "<small>já passou</small>" : ""}</button>`).join("")}
     </div></div>
-    ${livres ? "" : `<p class="hint">${diaSel === "hoje" ? "Não há mais horários livres hoje. Escolha Amanhã ou Outro dia." : "Todos os horários estão ocupados no momento. Chame no WhatsApp para entrar na lista de espera."}</p>`}`
+    ${livres ? "" : `<p class="hint">${hoje ? "Não há mais horários livres hoje. Escolha outro dia." : "Todos os horários deste dia estão ocupados. Escolha outro dia ou chame no WhatsApp para entrar na lista de espera."}</p>`}`
     : '<p class="vazio">Sem horários abertos no momento. Chame no WhatsApp para consultar a agenda.</p>';
 }
 
@@ -704,10 +730,11 @@ function atualizar() {
   } else if (!horarioSel) {
     r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Total estimado:</b> ${brl(soma)}<br>Agora escolha o dia e o horário acima.</p>`;
   } else {
-    const quando = diaSel === "outro" ? "" : ` para ${diaSel === "hoje" ? "hoje" : "amanhã"} (${diaData(diaSel)})`;
-    const fim = diaSel === "outro" ? "Quais dias você tem disponível?" : "Pode confirmar?";
+    const dd = descDia();
+    const quando = !dd ? "" : dd.x.i === 0 ? ` para hoje (${dd.curta})` : dd.x.i === 1 ? ` para amanhã (${dd.curta})` : ` para ${dd.longa}`;
+    const fim = !dd ? "Quais dias você tem disponível?" : "Pode confirmar?";
     msg = `Oi! Gostaria de agendar: ${nomes.join(" + ")}${quando} às ${horarioSel} (total estimado ${brl(soma)}). ${fim} 💜`;
-    const diaTxt = diaSel === "outro" ? "A combinar na conversa" : `${diaSel === "hoje" ? "Hoje" : "Amanhã"}, ${diaData(diaSel)}`;
+    const diaTxt = !dd ? "A combinar na conversa" : dd.x.i === 0 ? `Hoje, ${dd.curta}` : dd.x.i === 1 ? `Amanhã, ${dd.curta}` : cap(dd.longa);
     r.innerHTML = `<p><b>Serviço:</b> ${esc(nomes.join(" + "))}<br><b>Dia:</b> ${esc(diaTxt)}<br><b>Horário:</b> ${esc(horarioSel)}<br><b>Total estimado:</b> ${brl(soma)}</p>
       <a class="btn primary" target="_blank" rel="noopener" href="${wa(msg)}">Finalizar pelo WhatsApp</a>`;
   }

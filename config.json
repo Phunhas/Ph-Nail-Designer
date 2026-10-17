@@ -102,5 +102,6 @@
       "q": "Posso escolher mais de um serviço?",
       "a": "Pode sim. Toque em todos os serviços que quiser e o total é somado automaticamente."
     }
-  ]
+  ],
+  "ocupados": {}
 }
