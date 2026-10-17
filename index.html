@@ -136,6 +136,23 @@
   .resumo p:last-child { margin-bottom: 0; }
   .resumo p b { color: var(--lilac-soft); font-weight: 600; }
 
+  /* Galeria */
+  .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .galeria button {
+    display: block; width: 100%; padding: 0; aspect-ratio: 1; overflow: hidden; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 16px; background: var(--card); transition: .15s;
+  }
+  .galeria button:hover { box-shadow: var(--glow); transform: translateY(-2px); }
+  .galeria img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lightbox {
+    position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background: rgba(8,2,14,.94); cursor: pointer;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  }
+  .lightbox img { max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: 14px; box-shadow: var(--glow); }
+  .lightbox p { color: var(--lilac-soft); text-align: center; overflow-wrap: anywhere; }
+  .lightbox .fechar { color: var(--muted); font-size: 15px; letter-spacing: .1em; }
+
   /* Contato */
   .contact { text-align: center; }
   .contact .links { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px; }
@@ -210,6 +227,13 @@
     <p class="hint">Não achou um horário bom? Chame no WhatsApp que a gente combina.</p>
   </section>
 
+  <section id="trabalhos" hidden>
+    <div class="divider" aria-hidden="true">♡</div>
+    <h2>Meus Trabalhos</h2>
+    <div class="sub">Inspire-se</div>
+    <div class="galeria" id="galeria"></div>
+  </section>
+
   <section id="contato" class="contact">
     <div class="divider" aria-hidden="true">♡</div>
     <h2>Agendamentos</h2>
@@ -222,6 +246,12 @@
   </section>
 
   <footer>© <span id="ano"></span> PH Nail Designer</footer>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" hidden>
+  <img id="lb-img" src="" alt="">
+  <p id="lb-legenda"></p>
+  <span class="fechar">Toque para fechar</span>
 </div>
 
 <a class="float" id="float-whats" href="#" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
@@ -312,6 +342,14 @@ function desenhar() {
     ${livres ? "" : '<p class="hint">Todos os horários estão ocupados no momento. Chame no WhatsApp para entrar na lista de espera.</p>'}`
     : '<p class="vazio">Sem horários abertos no momento. Chame no WhatsApp para consultar a agenda.</p>';
 
+  // Galeria (só aparece se houver fotos)
+  const fotos = (Array.isArray(cfg.fotos) ? cfg.fotos : []).filter(f => f && f.src);
+  $("trabalhos").hidden = !fotos.length;
+  $("galeria").innerHTML = fotos.map((f, i) => `
+    <button type="button" data-i="${i}" aria-label="Ampliar foto ${i + 1}${f.legenda ? ": " + esc(f.legenda) : ""}">
+      <img src="${esc(f.src)}" alt="${esc(f.legenda || "Trabalho de nail designer")}" loading="lazy">
+    </button>`).join("");
+
   $("ano").textContent = new Date().getFullYear();
   atualizar();
 }
@@ -360,6 +398,18 @@ $("agenda").addEventListener("click", e => {
   horarioSel = horarioSel === b.dataset.h ? null : b.dataset.h;
   atualizar();
 });
+
+// Foto ampliada
+$("galeria").addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]"); if (!b) return;
+  const f = cfg.fotos[+b.dataset.i]; if (!f) return;
+  $("lb-img").src = f.src; $("lb-img").alt = f.legenda || "Trabalho de nail designer";
+  $("lb-legenda").textContent = f.legenda || "";
+  $("lightbox").hidden = false;
+});
+const fecharFoto = () => { $("lightbox").hidden = true; $("lb-img").src = ""; };
+$("lightbox").addEventListener("click", fecharFoto);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("lightbox").hidden) fecharFoto(); });
 
 // Logo: usa logo.png se existir; senão mostra o PH em texto
 (() => {

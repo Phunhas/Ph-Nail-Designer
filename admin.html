@@ -47,6 +47,11 @@
   .hrow .acts { display: flex; gap: 8px; flex-wrap: wrap; }
   .badge { font-size: 14px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--ok); text-align: center; }
   .badge.busy { color: var(--warn); border-color: rgba(252,211,77,.5); }
+  input[type=file] { width: 100%; color: var(--muted); margin: 6px 0 12px; font: inherit; font-size: 15px; }
+  .fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
+  .foto { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 14px; padding: 8px; background: rgba(0,0,0,.2); min-width: 0; }
+  .foto img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; background: var(--field); }
+  .foto input[type=text] { padding: 8px 10px; font-size: 15px; }
   .bar {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: rgba(18,5,31,.96);
     border-top: 1px solid var(--line);
@@ -104,6 +109,15 @@
       <p class="help">Marque "Combo" para mostrar a etiqueta COMBO. Use as setas para mudar a ordem.</p>
       <div id="servicos"></div>
       <button type="button" class="ghost mini" id="add-servico">+ Adicionar serviço</button>
+    </div>
+
+    <div class="card">
+      <h2>Fotos dos trabalhos</h2>
+      <p class="help">As fotos aparecem no site na seção "Meus Trabalhos". Elas são reduzidas automaticamente e enviadas na hora. Use só fotos de trabalhos feitos por você. A legenda é opcional e é salva ao tocar em "Salvar no site".</p>
+      <label for="arquivos">Escolha uma ou mais fotos</label>
+      <input type="file" id="arquivos" accept="image/*" multiple>
+      <button type="button" class="ghost mini" id="enviar-fotos">Enviar fotos para o site</button>
+      <div class="fgrid" id="fotos"></div>
     </div>
 
     <div class="card">
@@ -176,7 +190,7 @@ async function carregar() {
     const j = await r.json();
     sha = j.sha;
     cfg = JSON.parse(fromB64(j.content));
-    cfg.servicos = cfg.servicos || []; cfg.horarios = cfg.horarios || [];
+    cfg.servicos = cfg.servicos || []; cfg.horarios = cfg.horarios || []; cfg.fotos = cfg.fotos || [];
     store.set("repo", repo); store.set("token", token);
     $("editor").hidden = false; $("conexao").hidden = true;
     preencher(); msg("Pronto para editar.", "ok");
@@ -188,7 +202,7 @@ function preencher() {
   $("whats").value = cfg.whatsapp || "";
   $("insta").value = cfg.instagram || "";
   $("email").value = cfg.email || "";
-  desenharHorarios(); desenharServicos();
+  desenharHorarios(); desenharServicos(); desenharFotos();
 }
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -255,6 +269,95 @@ $("add-hora").onclick = () => { cfg.horarios.push({ hora: "", ocupado: false });
 $("liberar-todos").onclick = () => { cfg.horarios.forEach(h => h.ocupado = false); desenharHorarios(); };
 $("conectar").onclick = carregar;
 
+// ---------- Fotos ----------
+const previews = {}; // miniaturas locais das fotos recém-enviadas (o site leva ~1 min para publicá-las)
+
+function desenharFotos() {
+  const L = cfg.fotos || [];
+  $("fotos").innerHTML = L.length ? L.map((f, i) => `
+    <div class="foto" data-i="${i}">
+      <img src="${esc(previews[f.src] || f.src)}" alt="Foto ${i + 1}">
+      <input type="text" data-f="legenda" maxlength="80" value="${esc(f.legenda || "")}" placeholder="Legenda (opcional)" aria-label="Legenda da foto ${i + 1}">
+      <button type="button" class="danger mini" data-a="del">Remover</button>
+    </div>`).join("") : '<p class="help" style="grid-column:1/-1">Nenhuma foto ainda.</p>';
+}
+
+async function reduzir(file) {
+  let img;
+  try { img = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch (e) {
+    img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = URL.createObjectURL(file); });
+  }
+  const w = img.width || img.naturalWidth, h = img.height || img.naturalHeight;
+  const k = Math.min(1, 1200 / Math.max(w, h));
+  const c = document.createElement("canvas");
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  const url = c.toDataURL("image/jpeg", 0.82);
+  return { b64: url.split(",")[1], url };
+}
+
+// Grava só a lista de fotos no config.json, sem tocar nas outras edições em andamento
+async function gravarFotos() {
+  const r = await api("config.json");
+  if (!r.ok) throw new Error(erroHttp(r));
+  const j = await r.json();
+  const remoto = JSON.parse(fromB64(j.content));
+  remoto.fotos = cfg.fotos.map(f => ({ src: f.src, legenda: String(f.legenda || "").trim().slice(0, 80) }));
+  const p = await api("config.json", {
+    method: "PUT",
+    body: JSON.stringify({ message: "Atualiza fotos pelo painel", content: b64utf8(JSON.stringify(remoto, null, 2) + "\n"), sha: j.sha })
+  });
+  if (!p.ok) throw new Error(erroHttp(p));
+  sha = (await p.json()).content.sha;
+}
+
+$("enviar-fotos").onclick = async () => {
+  const files = [...$("arquivos").files];
+  if (!files.length) return msg("Escolha pelo menos uma foto.", "err");
+  if (!cfg) return carregar();
+  $("enviar-fotos").disabled = true;
+  const novas = []; let erro = null;
+  try {
+    for (let i = 0; i < files.length; i++) {
+      msg(`Enviando foto ${i + 1} de ${files.length}...`);
+      const { b64, url } = await reduzir(files[i]);
+      const path = `fotos/${Date.now()}-${i}.jpg`;
+      const r = await api(path, { method: "PUT", body: JSON.stringify({ message: "Adiciona foto pelo painel", content: b64 }) });
+      if (!r.ok) throw new Error(erroHttp(r));
+      previews[path] = url; novas.unshift({ src: path, legenda: "" });
+    }
+  } catch (e) { erro = e; }
+  if (novas.length) {
+    cfg.fotos = [...novas, ...cfg.fotos];
+    try { await gravarFotos(); } catch (e) { erro = erro || e; }
+    desenharFotos();
+  }
+  if (erro) msg(erro.message || "Algo deu errado no envio.", "err");
+  else { $("arquivos").value = ""; msg("Fotos enviadas! Elas aparecem no site em cerca de 1 minuto.", "ok"); }
+  $("enviar-fotos").disabled = false;
+};
+
+$("fotos").addEventListener("input", e => {
+  const box = e.target.closest("[data-i]"); if (!box || e.target.dataset.f !== "legenda") return;
+  cfg.fotos[+box.dataset.i].legenda = e.target.value;
+});
+
+$("fotos").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-a=del]"); if (!b) return;
+  if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "Confirmar remoção"; return; }
+  const i = +b.closest("[data-i]").dataset.i;
+  const [f] = cfg.fotos.splice(i, 1);
+  b.disabled = true; msg("Removendo foto...");
+  try {
+    await gravarFotos();
+    const r = await api(f.src);
+    if (r.ok) { const j = await r.json(); await api(f.src, { method: "DELETE", body: JSON.stringify({ message: "Remove foto pelo painel", sha: j.sha }) }); }
+    msg("Foto removida. O site atualiza em cerca de 1 minuto.", "ok");
+  } catch (err) { cfg.fotos.splice(i, 0, f); msg(err.message || "Não consegui remover.", "err"); }
+  desenharFotos();
+});
+
 // Salvar
 function validar() {
   const servicos = [];
@@ -278,7 +381,8 @@ function validar() {
   if (email && !/^\S+@\S+\.\S+$/.test(email)) throw new Error("E-mail inválido.");
   return {
     whatsapp, instagram: $("insta").value.trim().replace(/^@/, ""), email,
-    aviso: $("aviso").value.trim(), servicos, horarios
+    aviso: $("aviso").value.trim(), servicos, horarios,
+    fotos: (cfg.fotos || []).map(f => ({ src: f.src, legenda: String(f.legenda || "").trim().slice(0, 80) }))
   };
 }
 

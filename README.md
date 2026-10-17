@@ -37,6 +37,7 @@ No painel dá para:
 - mudar nome, preço e observação de cada serviço, adicionar, remover e reordenar;
 - adicionar e remover horários;
 - marcar um horário como **ocupado** (ele continua aparecendo para as clientes, mas sem poder escolher) e liberar depois;
+- enviar **fotos dos trabalhos**: escolha as fotos no celular e toque em "Enviar fotos para o site". Elas são reduzidas sozinhas e aparecem na seção "Meus Trabalhos". Dá para escrever uma legenda (salva em "Salvar no site") e remover fotos. Se não houver nenhuma foto, a seção não aparece no site;
 - escrever um **aviso** que aparece no topo do site;
 - mudar WhatsApp, Instagram e e-mail.
 
