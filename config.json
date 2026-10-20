@@ -25,49 +25,49 @@
   "servicos": [
     {
       "nome": "Blindagem",
-      "preco": 50,
-      "nota": "",
-      "combo": false
-    },
-    {
-      "nome": "Esmaltação em gel",
       "preco": 40,
       "nota": "",
       "combo": false
     },
     {
+      "nome": "Esmaltação em gel",
+      "preco": 35,
+      "nota": "",
+      "combo": false
+    },
+    {
       "nome": "Esmaltação tradicional",
-      "preco": 25,
-      "nota": "Só mão ou pé · juntos fica por R$ 40",
+      "preco": 22,
+      "nota": "Só mão ou pé · juntos fica por R$ 37",
       "combo": false
     },
     {
       "nome": "Remoção de alongamento",
-      "preco": 25,
+      "preco": 20,
       "nota": "",
       "combo": false
     },
     {
       "nome": "Remoção de esmaltação em gel",
-      "preco": 15,
+      "preco": 12,
       "nota": "",
       "combo": false
     },
     {
       "nome": "Combo Blindagem + Esmaltação",
-      "preco": 60,
+      "preco": 50,
       "nota": "",
       "combo": true
     },
     {
       "nome": "Banho de gel",
-      "preco": 60,
+      "preco": 50,
       "nota": "",
       "combo": false
     },
     {
       "nome": "Combo Banho de gel + Esmaltação em gel",
-      "preco": 70,
+      "preco": 60,
       "nota": "",
       "combo": true
     }
